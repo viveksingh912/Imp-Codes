@@ -1,0 +1,63 @@
+#include<bits/stdc++.h> 
+using namespace std;
+int n=8;
+int arr[8]={8,1,5,4,6,9,10,6};
+// class
+class SgTree{
+    vector<int> tree;
+    public:
+    SgTree(int n){
+        // tree=vector<int>(4*n+1);
+        // or or
+        tree.resize(4*n+1);
+    }
+int query(int node,int start,int end,int left,int right){
+    if(start>right || end<left)
+    return -1e9;;
+    if(start==end)
+    return tree[node];
+    if(left<=start && right>=end)
+    return tree[node];
+    else{
+        int mid=(start+end)/2;
+        int l=query(node*2,start,mid,left,right);
+        int r=query(node*2+1,mid+1,end,left,right);
+        return max(l,r);
+    }
+}
+int build(int node,int start,int end,int *arr){
+    if(start==end){
+        tree[node]=arr[start];
+        return node;
+    }
+    int mid=(start+end)/2;
+    int left=build(node*2,start,mid,arr);
+    int right=build(node*2+1,mid+1,end,arr);
+    tree[node]=max(tree[left],tree[right]);
+    return node;
+}
+void update(int node,int start,int end,int pos,int element){
+    if(start==end){
+        // arr[start]=element;
+        tree[node]=element;return;
+    }
+    int mid=(start+end)/2;
+    if(pos>=start && pos<=mid){
+        update(node*2,start,mid,pos,element);
+    }
+    else{
+        update(node*2+1,mid+1,end,pos,element);
+    }
+    tree[node]=max(tree[node*2],tree[node*2+1]);
+}
+};
+int main(){
+    int n=8;
+    SgTree s1(n);
+    s1.build(1,0,7,arr);
+    s1.update(1,0,7,7,19);
+    cout<<s1.query(1,0,7,4,7)<<"\n";
+    cout<<s1.query(1,0,7,3,5)<<"\n";
+    cout<<s1.query(1,0,7,1,2)<<"\n";
+    return 0;
+}
