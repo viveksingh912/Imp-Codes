@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+using namespace std;
+class comp
+{
+public:
+    bool operator()(pair<int, int> &a, pair<int, int> &b)
+    {
+        return a.first > b.first;
+    }
+};
+class dijkstr
+{
+public:
+    unordered_map<int, list<pair<int, int>>> adj;
+    vector<int> dist;
+    // Crating a min heap,by default it's a max heap
+    priority_queue<pair<int, int>, vector<pair<int, int>>, comp> q;
+    dijkstr(int n)
+    {
+        dist.resize(n, INT_MAX);
+    }
+    void prepadj(vector<vector<int>> &edges)
+    {
+        for (int i = 0; i < edges.size(); i++)
+        {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int w = edges[i][2];
+            adj[v].push_back({u, w});
+            adj[u].push_back({v, w});
+        }
+    }
+    void findMinDist(int s)
+    {
+        dist[s] = 0;
+        q.push({0, s});
+        while (!q.empty())
+        {
+            auto it = q.top();
+            q.pop();
+            int d = it.first;
+            int node = it.second;
+            for (auto &i : adj[node])
+            {
+                if (d + i.second < dist[i.first])
+                {
+                    dist[i.first] = d + i.second;
+                    q.push({dist[i.first], i.first});
+                }
+            }
+        }
+    }
+};
