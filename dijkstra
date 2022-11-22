@@ -19,16 +19,10 @@ public:
     {
         dist.resize(n, INT_MAX);
     }
-    void prepadj(vector<vector<int>> &edges)
+    void addEdge(int u,int v,int w)
     {
-        for (int i = 0; i < edges.size(); i++)
-        {
-            int u = edges[i][0];
-            int v = edges[i][1];
-            int w = edges[i][2];
             adj[v].push_back({u, w});
             adj[u].push_back({v, w});
-        }
     }
     void findMinDist(int s)
     {
