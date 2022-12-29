@@ -1,0 +1,25 @@
+const ll  N = 1e5 + 1;
+// const ll   N=1e5;
+vector<ll  > prime(1e5+5);
+
+void seive(){
+    for(ll   i=1;i<=N;i++){
+        prime[i]=i;
+    }
+    for(ll   i=2;i<=N;i++){
+        if(prime[i]==i){
+            for(ll   j=i+i;j<=N;j+=i){
+                if(prime[j]==j)
+                prime[j]=i;
+            }
+        }
+    }
+}
+set<ll  > primefact(ll x){
+    set<ll  > ans;
+    while(x!=1){
+        ans.insert(prime[x]);
+        x/=prime[x];
+    }
+    return ans;
+}
