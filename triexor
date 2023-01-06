@@ -1,0 +1,81 @@
+class TrieNode
+{
+public:
+    vector<TrieNode *> v;
+    int cnt;
+    TrieNode()
+    {
+        v.assign(2, NULL);
+        cnt = 0;
+    }
+};
+class trie
+{
+    TrieNode *root;
+    int N;
+
+public:
+    trie(int n)
+    {
+        root = new TrieNode();
+        N = n;
+    }
+    void insert(int val)
+    {
+        TrieNode *temp = root;
+        // cout<<"inserting";
+        for (int i = N; i >= 0; i--)
+        {
+            int bit = (val >> i) & 1;
+            if (!temp->v[bit])
+                temp->v[bit] = new TrieNode();
+            temp = temp->v[bit];
+            temp->cnt++;
+        }
+    }
+    void Delete(int val)
+    {
+        // cout<<"deleting";
+        TrieNode *temp = root;
+        for (int i = N; i >= 0; i--)
+        {
+            int bit = (val >> i) & 1;
+            temp = temp->v[bit];
+            temp->cnt--;
+            // }
+        }
+    }
+    int query(int val)
+    {
+        // cout<<"query";
+        TrieNode *temp = root;
+        for (int i = N; i >= 0; i--)
+        {
+            int bit = (val >> i) & 1;
+            if (bit && temp)
+            {
+                if (temp->v[!bit] && temp->v[!bit]->cnt > 0)
+                    temp = temp->v[!bit];
+                else
+                {
+                    val ^= (1 << i);
+                    temp = temp->v[bit];
+                }
+            }
+            else if (temp)
+            {
+
+                if (temp->v[!bit] && temp->v[!bit]->cnt > 0)
+                {
+                    val ^= (1 << i);
+                    temp = temp->v[!bit];
+                }
+                else
+                {
+                    temp = temp->v[bit];
+                }
+            }
+        }
+        return val;
+    }
+};
