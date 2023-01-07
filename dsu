@@ -1,0 +1,44 @@
+class dsu{
+    vector<int> rank,size,parent;
+    public:
+    dsu(int n){
+        rank.assign(n,0);
+        size.assign(n,1);
+        parent.assign(n,0);
+        iota(parent.begin(),parent.end(),0);
+    }
+    int findparent(int x){
+        if(parent[x]==x)
+        return x;
+        return parent[x]=findparent(parent[x]);
+    }
+    void Urank(int x,int y){
+        x=findparent(x);
+        y=findparent(y);
+        if(x==y)
+        return;
+        if(rank[x]<rank[y])
+        parent[x]=y;
+        else if(rank[x]>rank[y])
+        parent[y]=x;
+        else
+        {
+            parent[x]=y;
+            rank[y]++;
+        }
+    }
+    void Usize(int x,int y){
+        x=findparent(x);
+        y=findparent(y);
+        if(x==y)
+        return;
+        if(size[x]>size[y]){
+            parent[y]=x;
+            size[x]+=size[y];
+        }
+        else{
+            parent[x]=y;
+            size[y]+=size[x];
+        }
+    }
+};
