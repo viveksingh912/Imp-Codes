@@ -1,0 +1,23 @@
+void nextgreater(vector<int> &greater,vector<int> &arr){
+	int n=arr.size();
+	stack<int> s;
+	s.push(n);
+	for(int i=n-1;i>=0;i--){
+  // <= in case of greater element only
+		while(s.top()!=n && arr[s.top()]<arr[i])
+		s.pop();
+		greater[i]=s.top();
+		s.push(i);
+	}
+}
+void prevgreater(vector<int> &greater,vector<int> &arr){
+	int n=arr.size();
+	stack<int> s;
+	s.push(-1);
+	for(int i=0;i<n;i++){
+		while(s.top()!=-1 && arr[s.top()]<arr[i])
+		s.pop();
+		greater[i]=s.top();
+		s.push(i);
+	}
+}
