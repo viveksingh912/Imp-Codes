@@ -1,92 +1,55 @@
-#include<bits/stdc++.h>
-using namespace std;
-class SgTree{
-    public:
-    vector<int> tree;
-    vector<int> lazy;
-    SgTree(int n){
-        tree.resize(4*n+1);
-        lazy.resize(4*n+1);
-    }
-    void build(int node,int start,int end,vector<int> &arr){
-        if(start==end){
-            tree[node]=arr[start];
-            return;
-        }
-        int mid=(start+end)>>1;
-        build(node*2,start,mid,arr);
-        build(node*2+1,mid+1,end,arr);
-        tree[node]=tree[node*2]+tree[node*2+1];
-    }
-    void update(int node,int start,int end,int l,int r,int val){
-        if(start>r || end<l){
-        return;
-        }
-        if(lazy[node]!=0){
-            tree[node]+=abs(end-start+1)*lazy[node];
-            if(start!=end){
-                lazy[node*2]+=lazy[node];
-                lazy[node*2+1]+=lazy[node];
-        }
-            lazy[node]=0;
-        }
-        if(start>=l && end<=r){
-            tree[node]+=abs(end-start+1)*val;
-            if(start!=end){
-                lazy[2*node]+=val;
-                lazy[2*node+1]+=val;
-            }
-            return;
-        }
-        else{
-            int mid=(start+end)/2;
-            update(node*2,start,mid,l,r,val);
-            update(node*2+1,mid+1,end,l,r,val);
-            tree[node]=tree[node*2]+tree[node*2+1];
-        }
-    }
-    int query(int node,int start,int end,int l,int r){
-        if(start>r || end<l)
-        return 0;
-        if(lazy[node]!=0){
-            tree[node]+=abs(end-start+1)*lazy[node];
-            if(start!=end){
-                lazy[node*2]+=lazy[node];
-                lazy[node*2+1]+=lazy[node];
-            }
-            lazy[node]=0;
-        }
-        if(start>=l && end<=r){
-            return tree[node];
-        }
-        else{
-            int mid=(start+end)>>1;
-            int left=query(node*2,start,mid,l,r);
-            int right=query(node*2+1,mid+1,end,l,r);
-            return (left+right);
-        }
-    }
+class sgTree{
+	vector<int> tree;
+	vector<int> lazy;
+	public:
+	sgTree(int n){
+		tree.assign(4*n+1,0);
+		lazy.assign(4*n+1,0);
+	}
+	void propogate(int node,int s,int e){
+		tree[node]=tree[node]+(lazy[node]*(e-s+1));
+		if(s!=e){
+			lazy[node*2+1]+=lazy[node];
+			lazy[node*2+2]+=lazy[node];
+		}
+		lazy[node]=0;
+	}
+	void build(int node,int s,int e,vector<int> &arr){
+		if(s==e){
+			tree[node]=arr[s];
+			return;
+		}
+		int mid=(s+e)/2;
+		build(node*2+1,s,mid,arr);
+		build(node*2+2,mid+1,e,arr);
+		tree[node]=(tree[2*node+1]+tree[2*node+2]);
+	}
+	int query(int node,int s,int e,int l,int r){
+		propogate(node,s,e);
+		if(l>e || r<s)
+		return 0;
+		if(s>=l && e<=r)
+		return tree[node];
+		int mid=(s+e)/2;
+		int left=query(node*2+1,s,mid,l,r);
+		int right=query(node*2+2,mid+1,e,l,r);
+		return left+right;
+	}
+	void update(int node,int s,int e,int l,int r,int element){
+		if(l>e || r<s)
+		return;
+		propogate(node,s,r);
+		if(s>=l && e<=r){
+			tree[node]=tree[node]+(e-s+1)*element;
+			if(s!=e){
+				lazy[node*2+1]+=element;
+				lazy[node*2+2]+=element;
+			}
+			return ;
+		}
+		int mid=(s+e)/2;
+		update(node*2+1,s,mid,l,r,element);
+		update(node*2+2,mid+1,e,l,r,element);
+		tree[node]=(tree[node*2+1]+tree[node*2+2]);
+	}
 };
-int main(){
-    int n;
-    cin>>n;
-    vector<int> v(n);
-    for(auto &i:v)cin>>i;
-    SgTree s(n);
-    s.build(1,0,n-1,v);
-    int q;cin>>q;
-    while(q--){
-        int type;cin>>type;
-        if(type==1){
-            int l,r,val;
-            cin>>l>>r>>val;
-            s.update(1,0,n-1,l,r,val);
-        }
-        else{
-            int l,r;
-            cin>>l>>r;
-            cout<<s.query(1,0,n-1,l,r)<<"\n";
-        }
-    }
-    return 0;
-}
