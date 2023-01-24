@@ -25,9 +25,9 @@ class sgTree{
 		tree[node]=(tree[2*node+1]+tree[2*node+2]);
 	}
 	int query(int node,int s,int e,int l,int r){
-		propogate(node,s,e);
 		if(l>e || r<s)
 		return 0;
+		propogate(node,s,e);
 		if(s>=l && e<=r)
 		return tree[node];
 		int mid=(s+e)/2;
