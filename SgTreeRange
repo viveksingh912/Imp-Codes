@@ -3,53 +3,59 @@ class sgTree{
 	vector<int> lazy;
 	public:
 	sgTree(int n){
-		tree.assign(4*n+1,0);
-		lazy.assign(4*n+1,0);
+		tree.assign(4*n,0);
+		lazy.assign(4*n,0);
 	}
-	void propogate(int node,int s,int e){
-		tree[node]=tree[node]+(lazy[node]*(e-s+1));
+	inline void propogate(int node,int s,int e){
+		if(!lazy[node])return;
+		tree[node]=(tree[node]+(lazy[node]*(e-s+1)))%mod;
 		if(s!=e){
 			lazy[node*2+1]+=lazy[node];
+			lazy[node*2+1]%=mod;
 			lazy[node*2+2]+=lazy[node];
+			lazy[node*2+2]%=mod;
 		}
 		lazy[node]=0;
 	}
-	void build(int node,int s,int e,vector<int> &arr){
-		if(s==e){
-			tree[node]=arr[s];
+	void build(int node,int start,int end,vector<int> &arr){
+		if(start==end){
+			tree[node]=arr[start]%mod;
 			return;
 		}
-		int mid=(s+e)/2;
-		build(node*2+1,s,mid,arr);
-		build(node*2+2,mid+1,e,arr);
-		tree[node]=(tree[2*node+1]+tree[2*node+2]);
+		int mid=(start+end)/2;
+		build(node*2+1,start,mid,arr);
+		build(node*2+2,mid+1,end,arr);
+		tree[node]=(tree[2*node+1]+tree[2*node+2])%mod;
 	}
-	int query(int node,int s,int e,int l,int r){
-		if(l>e || r<s)
-		return 0;
-		propogate(node,s,e);
-		if(s>=l && e<=r)
-		return tree[node];
-		int mid=(s+e)/2;
-		int left=query(node*2+1,s,mid,l,r);
-		int right=query(node*2+2,mid+1,e,l,r);
-		return left+right;
-	}
-	void update(int node,int s,int e,int l,int r,int element){
-		if(l>e || r<s)
-		return;
-		propogate(node,s,r);
-		if(s>=l && e<=r){
-			tree[node]=tree[node]+(e-s+1)*element;
-			if(s!=e){
-				lazy[node*2+1]+=element;
-				lazy[node*2+2]+=element;
-			}
-			return ;
-		}
-		int mid=(s+e)/2;
-		update(node*2+1,s,mid,l,r,element);
-		update(node*2+2,mid+1,e,l,r,element);
-		tree[node]=(tree[node*2+1]+tree[node*2+2]);
-	}
+	int query(int node,int start,int end,int l,int r){
+        if(start>r || end<l)
+        return 0;
+        propogate(node,start,end);
+        if(start>=l && end<=r){
+            return tree[node]%mod;
+        }
+        int mid=(start+end)>>1;
+        int left=query(node*2+1,start,mid,l,r);
+        int right=query(node*2+2,mid+1,end,l,r);
+        return (left+right)%mod;
+    }
+	void update(int node,int start,int end,int l,int r,int val){
+        if(start>r || end<l){
+        return;
+        }
+        propogate(node,start,end);
+        if(start>=l && end<=r){
+            tree[node]+=abs(end-start+1)*val;
+			tree[node]%=mod;
+            if(start!=end){
+                lazy[2*node+1]+=val;lazy[2*node+1]%=mod;
+                lazy[2*node+2]+=val;lazy[2*node+2]%=mod;
+            }
+            return;
+        }
+       int mid=(start+end)/2;
+       update(node*2+1,start,mid,l,r,val);
+       update(node*2+2,mid+1,end,l,r,val);
+       tree[node]=(tree[node*2+2]+tree[node*2+1])%mod;
+    }
 };
