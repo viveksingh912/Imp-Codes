@@ -40,18 +40,15 @@ class sgTree{
         return (left+right)%mod;
     }
 	void update(int node,int start,int end,int l,int r,int val){
-	propogate(node,start,end);
+        propogate(node,start,end);
         if(start>r || end<l){
         return;
-        }
+        }	
         if(start>=l && end<=r){
-            tree[node]+=abs(end-start+1)*val;
-			tree[node]%=mod;
-            if(start!=end){
-                lazy[2*node+1]+=val;lazy[2*node+1]%=mod;
-                lazy[2*node+2]+=val;lazy[2*node+2]%=mod;
-            }
-            return;
+			lazy[node]+=val;
+			lazy[node]%=mod;
+			propogate(node,start,end);
+			return ;
         }
        int mid=(start+end)/2;
        update(node*2+1,start,mid,l,r,val);
