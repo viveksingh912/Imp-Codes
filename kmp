@@ -1,0 +1,42 @@
+vector<int> LCS(string pattern){
+     int n=pattern.size();
+     vector<int> lcs(n,0);
+     int i=1;
+     int len=0;
+     while(i<n){
+          if(pattern[i]==pattern[len]){
+               len++;
+               lcs[i]=len;
+               i++;
+          }
+          else{
+               if(len)
+               len=lcs[len-1];
+               else
+               i++;
+          }
+     }
+     return lcs;
+}
+void find(string s,string pattern){
+     vector<int> lcs=LCS(pattern);
+     int n=s.size();
+     int i=0,j=0;
+     while(i<n){
+          cnt++;
+          if(pattern[j]==s[i]){
+               i++;j++;
+          }
+          else{
+               if(j)
+               j=lcs[j-1];
+               else
+               i++;
+          }
+          if(j==pattern.size())
+          {
+               cout<<i-j<<" ";
+               j=lcs[j-1];
+          }
+     }
+}
