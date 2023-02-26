@@ -1,0 +1,47 @@
+void getsubsets(int idx,vector<vector<int>> &ans,vector<int>&temp,vector<int>&prime){
+     if(idx==prime.size()){
+          if(temp.size())
+          ans.push_back(temp);return;
+     }
+     getsubsets(idx+1,ans,temp,prime);
+     temp.push_back(prime[idx]);
+     getsubsets(idx+1,ans,temp,prime);
+     temp.pop_back();
+}
+int compute(int n, int r){
+    vector<int> prime;
+    int temp=n;
+    if(temp%2==0){
+        prime.push_back(2);
+        while(temp%2==0)
+        temp/=2;
+    }
+    for(int i=3;i<=sqrt(temp);i+=2){
+        if(temp%i==0){
+            prime.push_back(i);
+            while(temp%i==0)
+            temp/=i;
+        }
+    }
+    if(temp>1){
+        prime.push_back(temp);
+    }
+    vector<int> tp;
+    vector<vector<int>> subsets;
+    getsubsets(0,subsets,tp,prime);
+    int ans=0;
+    for(auto &i:subsets){
+        int mult=1;
+        for(auto &j:i)
+        mult*=j;
+        if(i.size()%2)
+        ans+=(r/mult);
+        else
+        ans-=(r/mult);
+    }
+    return ans;
+}
+// counts the number of co-primes with respect to 'a' in the  range [l,r] ,(T.C-(sqrt(a)))
+int getans(int a,int l, int r){
+    return r-compute(a,r)-(l-1-compute(a,l-1));
+}
