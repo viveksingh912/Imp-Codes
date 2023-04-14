@@ -1,0 +1,103 @@
+class CentroidDecompostion
+{
+public:
+    int nn;
+    vector<vector<int>> dist;
+    vector<vector<pair<int,int>>> g;
+    vector<int> sub, deleted, par, level,W;
+    CentroidDecompostion(int n)
+    {
+        int k = log2(n) + 2;
+        sub.assign(n + 1, 0);
+        deleted.assign(n + 1, 0);
+        par.assign(n + 1, 0);
+        level.assign(n + 1, 0);
+        W.assign(n+1,0);
+        g.assign(n + 1, vector<pair<int,int>>());
+        dist.assign(k, vector<int>(n + 1, 0));
+        nn = 0;
+    }
+    
+    void addedge(int u, int v,int w = 1)
+    {
+        g[u].push_back({v,w});
+        g[v].push_back({u,w});
+    }
+
+    void dfs1(int u, int p)
+    {
+        sub[u] = 1;
+        nn++;
+        for (auto &pp : g[u])
+        {
+            int v=pp.first;
+            int w=pp.second;
+
+            if (v != p && !deleted[v] && !deleted[u])
+                dfs1(v, u), sub[u] += sub[v];
+        }
+    }
+    int find_centroid(int u, int p)
+    {
+        for (auto &pp : g[u])
+        {
+            int v=pp.first;
+            int w=pp.second;
+            if (v != p && sub[v] > nn/2 && !deleted[v] && !deleted[u])
+                return find_centroid(v, u);
+        }
+        return u;
+    }
+    void dfs2(int u, int p, int lvl)
+    {
+      
+        for (auto &pp : g[u])
+        {
+            int v=pp.first;
+            int w=pp.second;
+            if(v!=p && !deleted[v] && !deleted[u]){
+            // if weight is on the node add W[v] int place of w
+            dist[lvl][v] = dist[lvl][u] + w;
+            dfs2(v, u, lvl);
+            }
+        }
+    }
+    void add_edge_centroid_tree(int parent, int child)
+    {
+        par[child] = parent;
+        level[child] = level[parent] + 1;
+    }
+    int compute_distence(int x, int y)
+    {
+        int lca_level = 0;
+        int i,j;
+        for ( i = x, j = y; (lca_level = level[i] && i != j);)
+        {
+            level[i] < level[j] ? j = par[j] : i = par[i];
+        }
+        lca_level=level[i];
+        // if weight is on the node add W[i]  cux (i is the lca is centroid tree)
+        return dist[lca_level][x] + dist[lca_level][y];
+    }
+    void decompose(int root, int p = -1)
+    {
+        nn = 0;
+        dfs1(root, root);
+        int centroid = find_centroid(root, root);
+        if (p == -1)
+            p = root;
+        add_edge_centroid_tree(p, centroid);
+        dfs2(centroid, centroid, level[centroid]);
+        deleted[centroid]=1;
+        // process O(N) paths starting from the centroid to all leaves in this component;
+        for (auto &pp : g[centroid])
+        {
+            int v=pp.first;
+            int w=pp.second;
+            if (deleted[v])
+                continue;
+            // deleted[e] = 1;
+            decompose(v, centroid);
+        }
+    }
+};
