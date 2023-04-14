@@ -1,0 +1,102 @@
+class CentroidDecompostion
+{
+public:
+    int nn;
+    vector<vector<int>> g, dist;
+    vector<int> sub, deleted, U, V, W, par, level;
+    vector<int> temp;
+    CentroidDecompostion(int n)
+    {
+        int k = log2(n) + 2;
+        sub.assign(n + 1, 0);
+        deleted.assign(n + 1, 0);
+        U.assign(n + 1, 0);
+        V.assign(n + 1, 0);
+        W.assign(n + 1, 0);
+        par.assign(n + 1, 0);
+        level.assign(n + 1, 0);
+        g.assign(n + 1, vector<int>());
+        dist.assign(k, vector<int>(n + 1, 0));
+        nn = 0;
+    }
+    int adj(int x, int e) { return U[e] ^ V[e] ^ x; }
+    void addedge(int u, int v, int i, int w = 1)
+    {
+        W[i] = w;
+        U[i]=u;
+        V[i]=v;
+        g[U[i]].push_back(i);
+        g[V[i]].push_back(i);
+    }
+
+    void dfs1(int u, int p)
+    {
+        sub[u] = 1;
+        nn++;
+        for (auto &e : g[u])
+        {
+            int w = adj(u, e);
+            
+            if (w != p && !deleted[e])
+                dfs1(w, u), sub[u] += sub[w];
+        }
+    }
+    int find_centroid(int u, int p)
+    {
+        for (auto e : g[u])
+        {
+            if (deleted[e])
+                continue;
+            int w = adj(u, e);
+            if (w != p && sub[w] > nn / 2)
+                return find_centroid(w, u);
+        }
+        return u;
+    }
+    void dfs2(int u, int p, int lvl)
+    {
+        for (auto &e : g[u])
+        {
+            int w = adj(u, e);
+            if (w == p || deleted[e])
+                continue;
+            dist[lvl][w] = dist[lvl][u] + W[e];
+            dfs2(w, u, lvl);
+        }
+    }
+    void add_edge_centroid_tree(int parent, int child)
+    {
+        par[child] = parent;
+        level[child] = level[parent] + 1;
+    }
+    int compute_distence(int x, int y)
+    {
+        int lca_level = 0;
+        for (int i = x, j = y; (lca_level = level[i] && i != j);)
+        {
+            level[i] < level[j] ? j = par[j] : i = par[i];
+        }
+        return dist[lca_level][x] + dist[lca_level][y];
+    }
+    void decompose(int root, int p = -1)
+    {
+        nn = 0;
+        dfs1(root, root);
+     
+        int centroid = find_centroid(root, root);
+        temp.push_back(centroid);
+        if (p == -1)
+            p = root;
+        add_edge_centroid_tree(p, centroid);
+        // process O(N) paths starting from the centroid to all leaves in this component;
+        dfs2(centroid, centroid, level[centroid]);
+        for (auto &e : g[centroid])
+        {
+            if (deleted[e])
+                continue;
+            deleted[e] = 1;
+            int w = adj(centroid, e);
+            decompose(w, centroid);
+        }
+    }
+};
