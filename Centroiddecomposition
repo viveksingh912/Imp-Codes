@@ -60,6 +60,7 @@ public:
             int w = adj(u, e);
             if (w == p || deleted[e])
                 continue;
+           //IN case of weight on vertices e=w;
             dist[lvl][w] = dist[lvl][u] + W[e];
             dfs2(w, u, lvl);
         }
