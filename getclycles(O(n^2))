@@ -1,0 +1,26 @@
+function<void(int, int)> dfs = [&](int u, int p)
+   {
+      par[u] = p;
+      vis[u] = 1;
+      for (auto &i : adj[u])
+      {
+         if (i == p)
+            continue;
+         else if (!vis[i])
+            dfs(i, u);
+         else if (vis[i] == 1)
+         {
+            vector<int> temp;
+            int k = u, cnt = 0;
+            while (k != i)
+            {
+               temp.push_back(k);
+               k = par[k];
+            }
+ 
+            temp.push_back(k);
+            cycles.push_back(temp);
+         }
+      }
+      vis[u] = 2;
+   };
