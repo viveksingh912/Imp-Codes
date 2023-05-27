@@ -27,7 +27,7 @@ void calc()
 }
 ll ncr(ll n, ll r)
 {
-   if (r > n)
+   if (r > n || r<0 || n<0)
       return 0;
    ll ans = ((fact[n] * invfact[r]) % mod * invfact[n - r]) % mod;
    return ans;
