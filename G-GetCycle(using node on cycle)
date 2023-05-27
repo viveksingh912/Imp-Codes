@@ -1,0 +1,15 @@
+//make a cycle vis and on_cycle vector      
+      vis.assign(n,0);
+     on_cycle.assign(n,0);
+     function<bool(int,int,int)> get_cycle=[&](int u,int p,int st){
+         vis[u]=1;
+         for(auto &to:adj[u]){
+            if(to==p)continue;
+            if(to==st|| !vis[to] && get_cycle(to,u,st)){
+               cycle.push_back(u);
+               on_cycle[u]=1;
+               return true;
+            }
+         }
+         return false;
+     };
