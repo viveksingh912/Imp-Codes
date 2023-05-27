@@ -1,0 +1,19 @@
+vector<int> on_cycle(n,0),vis(n,0),cycle,reach(n),depth(n);
+     function<void(int,int)> is_cycle=[&](int u,int p){
+         vis[u]=1;
+         reach[u]=depth[u];
+         for(auto &to:adj[u]){
+            if(to==p)continue;
+            if(!vis[to]){
+               depth[to]=depth[u]+1;
+               is_cycle(to,u);
+               reach[u]=min(reach[u],reach[to]);
+               if(reach[to]!=depth[to])
+               on_cycle[u]=on_cycle[to]=1;
+            }
+            else{
+               reach[u]=min(reach[u],depth[to]);
+               on_cycle[u]=on_cycle[to]=1;
+            }
+         }
+     };
