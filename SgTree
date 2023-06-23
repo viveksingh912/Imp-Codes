@@ -20,7 +20,7 @@ int query(int node,int start,int end,int left,int right){
         return max(l,r);
     }
 }
-int build(int node,int start,int end,int *arr){
+int build(int node,int start,int end,vector<int> &arr){
     if(start==end){
         tree[node]=arr[start];
         return node;
