@@ -9,13 +9,13 @@ public:
         cnt = 0;
     }
 };
-class trie
+class Trie
 {
     TrieNode *root;
     int N;
 
 public:
-    trie(int n)
+    Trie(int n)
     {
         root = new TrieNode();
         N = n;
