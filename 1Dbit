@@ -1,0 +1,21 @@
+class  fenwick{
+	public:
+	vector<int> tree;
+	fenwick(int n)
+	{
+		tree.assign(n+1,0);
+	}
+	void update(int idx,int val){
+		for(int i=idx;i<tree.size();i+=(i&-i)){
+			tree[i]+=val;
+		}
+	}
+	int query(int x){
+		int sum=0;
+		while(x){
+			sum+=tree[x];
+			x-=(x&-x);
+		}
+		return sum;
+	}
+};
