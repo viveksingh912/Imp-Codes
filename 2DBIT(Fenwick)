@@ -1,0 +1,45 @@
+class fenwick
+{
+public:
+	vector<vector<int>> tree;
+	fenwick(int n)
+	{
+		tree.assign(n + 1, vector<int>(n + 1, 0));
+	}
+	void updateY(int x, int y, int val)
+	{
+		for (int i = y; i < tree[x].size(); i += (i & -i))
+		{
+			tree[x][i] += val;
+		}
+	}
+	void update(int x, int y, int val)
+	{
+		while (x < tree.size())
+		{
+			updateY(x, y, val);
+			x += (x & -x);
+		}
+	}
+	int calcY(int x, int y)
+	{
+		int sum = 0;
+		while (y > 0)
+		{
+			sum += tree[x][y];
+			y -= (y & -y);
+		}
+		return sum;
+	}
+	int sum_range(int x, int y)
+	{
+		int total = 0;
+		while (x > 0)
+		{
+			total += calcY(x, y);
+			x -= (x & -x);
+		}
+		return total;
+	}
+};
+// sum_range(x, y) represent sum of rectange from (1,1) to (x,y) T.C->O(N*M*log(M)*log(N))
