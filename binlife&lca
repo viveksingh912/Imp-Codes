@@ -1,52 +1,60 @@
-void dfs(int node, int parent, int h, vector<vector<int>> &up, vector<int> &level, vector<vector<int>> &adj, vector<int> &ht)
+class LCA
 {
-   up[node][0] = parent;
-   level[node] = h;
-   ht[node] = 1;
-   // to move to 2^i we first move to the 2^i-1 and the i-1 steps from there
-   for (int i = 1; i < K; i++)
-   {
-      if (up[node][i - 1] != -1)
-         up[node][i] = up[up[node][i - 1]][i - 1];
-      else
-         up[node][i] = -1;
-   }
-   for (auto &i : adj[node])
-   {
-      if (i != parent)
-      {
-         dfs(i, node, h + 1, up, level, adj, ht);
-         ht[node] = max(ht[i] + 1, ht[node]);
-      }
-   }
-}
-int lca(int u, int v, vector<vector<int>> &up, vector<int> &level)
-{
-   if (level[u] < level[v])
-      swap(u, v);
-   int uu = u, vv = v;
-   // jumping from u node to  v to make thier level equal .... below
-   for (int i = K - 1; i >= 0; i--)
-   {
-      if (level[u] - level[v] >= (1LL << i))
-      {
-         u = up[u][i];
-      }
-   }
-   // checking if v is ancestor of u and if so return that
-   if (u == v)
-      return level[uu] - level[vv];
-   // reaching to the closest possible node if their up values aren't equal
-   for (int i = K - 1; i >= 0; i--)
-   {
-      if (up[u][i] != up[v][i])
-      {
-         u = up[u][i];
-         v = up[v][i];
-      }
-   }
-   // Lca is just one step above the node 
-   int lca = up[u][0];
-   // calculating the distance and returning that
-   return level[uu] + level[vv] - 2 * level[lca];
-}
+public:
+     vector<vector<pair<int,int>>> adj;
+     vector<vector<int>> up;
+     vector<int> level, dist;
+     int n,K;
+     LCA(int _n):n(_n){
+          K=21;
+          adj.resize(_n);
+          up.assign(_n,vector<int>(K,-1));
+          level.resize(_n);
+          dist.resize(_n);
+     }
+     void addEdge(int u,int v,int w=1){
+          adj[u].emplace_back(v,w);
+          adj[v].emplace_back(u,w);
+     }
+     void dfs(int u, int p = -1)
+     {
+         for(auto &[to,w]:adj[u]){
+               if(to==p)continue;
+               dist[to]=dist[u]+w;
+               level[to]=level[u]+1;
+               up[to][0]=u;
+               for(int i=1;i<K;i++){
+                    if(up[to][i-1]!=-1)
+                    up[to][i]=up[up[to][i-1]][i-1];
+               }
+               dfs(to,u);
+         }
+     }
+     int dist_lca(int u, int v)
+     {
+          if (level[u] < level[v])
+               swap(u, v);
+          int uu = u, vv = v;
+          for (int i = K - 1; i >= 0; i--)
+          {
+               if (level[u] - level[v] >= (1LL << i))
+               {
+                    u = up[u][i];
+               }
+          }
+          if (u == v)
+               return dist[uu] - dist[vv];
+          for (int i = K - 1; i >= 0; i--)
+          {
+               if (up[u][i] != up[v][i])
+               {
+                    u = up[u][i];
+                    v = up[v][i];
+               }
+          }
+          // Lca is just one step above the node
+          int lca = up[u][0];
+          // In case of weight on node add dist[lca];
+          return dist[uu] + dist[vv] - 2 * dist[lca];
+     }
+};
