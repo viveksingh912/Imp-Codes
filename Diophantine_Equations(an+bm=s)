@@ -1,0 +1,70 @@
+int div_down(int a, int b)
+{
+	if (b < 0)
+	{
+		a = -a;
+		b = -b;
+	}
+	if (a > 0)
+		return a / b;
+	else
+		return (a - b + 1) / b;
+}
+int div_up(int a, int b)
+{
+	if (b < 0)
+	{
+		a = -a;
+		b = -b;
+	}
+	if (a < 0)
+		return a / b;
+	else
+		return (a + b - 1) / b;
+}
+int gcd(int n, int m, int &a, int &b)
+{
+	if (n == 0)
+	{
+		a = 0;
+		b = 1;
+		return m;
+	}
+	int a_ = 0, b_ = 0;
+	int d = gcd(m % n, n, a_, b_);
+	a = b_ - a_ * (m / n);
+	b = a_;
+	return d;
+}
+void solve()
+{
+	int n, m, sum;
+	// A*n+B*m=sum;
+	cin >> n >> m >> sum;
+	int a = 0, b = 0;
+	int d = gcd(n, m, a, b);
+	if (sum % d)
+	{
+		cout << 0 << "\n";
+		return;
+	}
+	// a*n_+b*m_=d;
+	//  to a0*n+b0*m=sum;
+	a *= sum / d;
+	b *= sum / d;
+	// a=a0, b=b0
+	// (a0+k*m_)*n+(b0-k*n_)*m=sum;
+	int n_ = n / d;
+	int m_ = m / d;
+	int l_bound = div_up(-a, m_);
+	int r_bound = div_down(b, n_);
+	if (l_bound > r_bound)
+	{
+		cout << 0 << "\n";
+		return;
+	}
+	// number of solutions
+	cout << r_bound - l_bound + 1 << "\n";
+	//solutions will be (a+l_bound*m_)*n   and (b-l_bound*n_)*m and l_bound++;
+
+}
