@@ -1,12 +1,16 @@
 struct Sparse{
    public:
     vector<vector<int>> table;
+    vector<int> lg;
     int n;
     Sparse(int N){
       table.assign(N,vector<int>(22,0));
       n=N;
+      lg.assign(2,0);
     }
     void build(vector<int> &v){
+      while(lg.size()<=n)
+      lg.push_back(lg[lg.size()>>1]+1);
       for(int i=0;i<n;i++){
          table[i][0]=v[i];
       }
@@ -19,7 +23,7 @@ struct Sparse{
     // 0 based indexing
     int query(int l,int r){
          int d=r-l+1;
-         int bit=__lg(d);
+         int bit=lg[d];
          return (table[l][bit]&table[r-(1<<bit)+1][bit]);
     }
 };
