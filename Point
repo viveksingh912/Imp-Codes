@@ -1,0 +1,45 @@
+struct P{
+   int x,y;
+   void read(){
+      cin>>x>>y;
+   }
+   int operator *(const P &b){
+      return x*b.y-y*b.x;
+   }
+   P operator -(const P &b)const{
+      return P{x-b.x, y-b.y};
+   }
+   void operator -=(const P &b){
+      x-=b.x;
+      y-=b.y;;
+   }
+   int area_triangle(const P &b,const P &c)const{
+      return (b-*this)*(c-*this);
+   }
+
+   bool intersecting(P p1, P p2, P p3, P p4){
+      if((p2-p1)*(p4-p3)==0){
+      // they are parallel
+      // case -1 non colinear
+      if(p1.area_triangle(p2,p3)!=0){
+         return false;
+      }
+      for(int rep=0;rep<2;rep++){
+         if(max(p1.x,p2.x)<min(p3.x,p4.x) || max(p1.y,p2.y)<min(p3.y,p4.y)){
+            return false;
+         }
+         swap(p1,p3);
+         swap(p2,p4);
+      }
+      return true;
+     }
+     for(int rep=0;rep<2;rep++){
+      if(p1.area_triangle(p2,p3)<0 && p1.area_triangle(p2,p4)<0 || p1.area_triangle(p2,p3)>0 && p1.area_triangle(p2,p4)>0){
+         return false;
+      }
+      swap(p1,p3);
+      swap(p2,p4);
+     }
+     return true;
+   }
+};
