@@ -65,6 +65,6 @@ void solve()
 	}
 	// number of solutions
 	cout << r_bound - l_bound + 1 << "\n";
-	//solutions will be (a+l_bound*m_)*n   and (b-l_bound*n_)*m and l_bound++;
+	//solutions will be (a+l_bound*m_)   and (b-l_bound*n_) and l_bound++;
 
 }
